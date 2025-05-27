@@ -3,6 +3,7 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import math
+import time
 
 from config import *
 from pcar import Car as PCar
@@ -21,13 +22,14 @@ def detect_joystick():
     if joystick is None and pygame.joystick.get_count() > 0:
         joystick = pygame.joystick.Joystick(0)
         joystick.init()
-        print(f"Joystick conectado: {joystick.get_name()}")
 
 stadium = Stadium()
 p_car = PCar("assets/models/car.obj", stadium)
 camera_mode = "player"
 ball = Ball("assets/models/ball.obj")
 m_car = MCar("assets/models/car.obj", stadium, is_left_goal=False)
+
+start_time = time.time()
 
 player_score = 0
 machine_score = 0
@@ -93,6 +95,55 @@ def draw_score_overlay():
     glPopMatrix()
     glMatrixMode(GL_MODELVIEW)
     glPopMatrix()
+
+def check_end():
+    global player_score, machine_score, done
+
+    current_time = time.time()
+    elapsed_time = current_time - start_time
+
+    result = None
+    if player_score >= 3:
+        result = "You win"
+    elif machine_score >= 3:
+        result = "You lose :("
+    elif elapsed_time >= 5 * 60:
+        if player_score > machine_score:
+            result = "You win"
+        elif player_score < machine_score:
+            result = "You lose :("
+        else:
+            result = "Tie"
+
+    if result:
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
+        glLoadIdentity()
+        glOrtho(0, screen_width, screen_height, 0, -1, 1)
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        glLoadIdentity()
+
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_LIGHTING)
+
+        text_surface = font.render(result, True, (255, 255, 255))
+        text_data = pygame.image.tostring(text_surface, "RGBA", True)
+
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glRasterPos2d(screen_width // 2 - text_surface.get_width() // 2, screen_height // 2 - text_surface.get_height() // 2)
+        glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE,text_data)
+
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_LIGHTING)
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
+        glMatrixMode(GL_MODELVIEW)
+        glPopMatrix()
+        pygame.display.flip()
+        time.sleep(5)
+        done = True
 
 def Init():
     glMatrixMode(GL_PROJECTION)
@@ -225,6 +276,8 @@ def display():
     
     check_goal()
     draw_score_overlay()
+    
+    check_end()
 
 Init()
 done = False
