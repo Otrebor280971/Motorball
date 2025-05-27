@@ -1,6 +1,6 @@
 # Blender 3.6.3
 # www.blender.org
-mtllib ..\textures\ball.mtl
+mtllib ../textures/ball.mtl
 o Sphere
 v 0.243210 -0.088521 0.965926
 v 0.469846 -0.171010 0.866025

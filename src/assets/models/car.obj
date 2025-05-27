@@ -1,6 +1,6 @@
 # Blender 3.6.3
 # www.blender.org
-mtllib ..\textures\car.mtl
+mtllib ../textures/car.mtl
 o FR_Wheel
 v 0.788908 1.122580 0.304545
 v 0.900383 1.325024 0.304545

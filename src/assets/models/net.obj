@@ -1,6 +1,6 @@
 # Blender 3.6.3
 # www.blender.org
-mtllib ..\textures\net.mtl
+mtllib ../textures/net.mtl
 o Plane.001
 v 0.792496 -3.996530 -0.000060
 v -0.930327 -3.996530 -0.000060

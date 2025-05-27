@@ -1,6 +1,6 @@
 # Blender 3.6.3
 # www.blender.org
-mtllib ..\textures\walls.mtl
+mtllib ../textures/walls.mtl
 o Plane.003
 v -4.000916 3.200041 1.799940
 v -4.000916 3.200041 0.299940

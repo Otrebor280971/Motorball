@@ -7,7 +7,7 @@ import math
 from config import *
 from pcar import Car as PCar
 from ball import Ball
-from ccar import Car as CCar
+from mcar import Car as MCar # le puse mcar en lugar de ccar pq quiero beto muajajaja
 from stadium import Stadium
 
 pygame.init()
@@ -18,7 +18,73 @@ stadium = Stadium()
 p_car = PCar("assets/models/car.obj", stadium)
 camera_mode = "player"
 ball = Ball("assets/models/ball.obj")
-c_car = CCar("assets/models/car.obj")
+m_car = MCar("assets/models/car.obj", stadium, is_left_goal=False)
+
+player_score = 0
+machine_score = 0
+font = pygame.font.Font(None, 74)
+
+def reset_positions():
+    p_car.x = -350
+    p_car.y = FLOOR
+    p_car.z = 0
+    p_car.rotation = 90
+    p_car.vy = 0
+    p_car.on_ground = True
+    
+    m_car.x = 350
+    m_car.y = FLOOR
+    m_car.z = 0
+    m_car.rotation = -90
+    
+    ball.x = 0
+    ball.y = 0
+    ball.z = 0
+    ball.vx = 0
+    ball.vy = 0
+    ball.vz = 0
+
+def check_goal():
+    global player_score, machine_score
+
+    goal_half_width = 0.3 * stadium.scale
+
+    if ball.x <= -stadium.scale*3.65 and abs(ball.z) <= goal_half_width:
+        machine_score += 1
+        reset_positions()
+
+    elif ball.x >= stadium.scale*3.65 and abs(ball.z) <= goal_half_width:
+        player_score += 1
+        reset_positions()
+
+
+def draw_score_overlay():
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    glOrtho(0, screen_width, screen_height, 0, -1, 1)
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+    
+    glDisable(GL_DEPTH_TEST)
+    glDisable(GL_LIGHTING)
+    
+    score_text = f"{player_score} - {machine_score}"
+    text_surface = font.render(score_text, True, (255, 255, 255))
+    text_data = pygame.image.tostring(text_surface, "RGBA", True)
+    
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    glRasterPos2d(screen_width/2 - text_surface.get_width()/2, 50)
+    glDrawPixels(text_surface.get_width(), text_surface.get_height(), GL_RGBA, GL_UNSIGNED_BYTE, text_data)
+    
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_LIGHTING)
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+    glMatrixMode(GL_MODELVIEW)
+    glPopMatrix()
 
 def Init():
     glMatrixMode(GL_PROJECTION)
@@ -89,8 +155,6 @@ def check_car_car_collision(car1, car2):
         car2.x += nx * rebound_speed
         car2.z += nz * rebound_speed
 
-
-    
 def lookat():
     cx, cy, cz = p_car.x, p_car.y, p_car.z
     bx, by, bz = ball.x, ball.y, ball.z
@@ -143,14 +207,16 @@ def display():
     p_car.update(keys)
     ball.draw()
     ball.update(stadium)
-    c_car.draw()
-    c_car.update()
+    m_car.draw()
+    m_car.update(ball, p_car)
     lookat()
     
     check_car_ball_collision(p_car, ball)
-    check_car_ball_collision(c_car, ball)
-
-    check_car_car_collision(p_car, c_car)
+    check_car_ball_collision(m_car, ball)
+    check_car_car_collision(p_car, m_car)
+    
+    check_goal()
+    draw_score_overlay()
 
 Init()
 done = False
@@ -168,6 +234,6 @@ while not done:
             
     display()
     pygame.display.flip()
-    pygame.time.wait(10)
+    pygame.time.wait(1000//60)
 
 pygame.quit()

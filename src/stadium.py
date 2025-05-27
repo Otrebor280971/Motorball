@@ -4,15 +4,15 @@ from OpenGL.GLU import *
 
 class Stadium:
     def __init__(self):
-        self.field = OBJ("assets/models/field.obj", swapyz=True)
-        self.walls = OBJ("assets/models/walls.obj", swapyz=True)
-        self.net = OBJ("assets/models/net.obj", swapyz=True)
+        self.field = OBJ("./assets/models/field.obj", swapyz=True)
+        self.walls = OBJ("./assets/models/walls.obj", swapyz=True)
+        self.net = OBJ("./assets/models/net.obj", swapyz=True)
 
         self.field.generate()
         self.walls.generate()
         self.net.generate()
 
-        self.scale = 100  # Ajusta según tus modelos
+        self.scale = 100
         
         self.wall_boxes = [
             { "min": (-4.2 * self.scale, 0,    -3.2 * self.scale), "max": (-3.8 * self.scale, 1.5 * self.scale, 3.2 * self.scale) },  # izquierda

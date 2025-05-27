@@ -1,6 +1,6 @@
 # Blender 3.6.3
 # www.blender.org
-mtllib ..\textures\field.mtl
+mtllib ../textures/field.mtl
 o Plane
 v -4.000000 3.000000 -0.000060
 v -4.000000 -3.000000 -0.000060
