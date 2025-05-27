@@ -18,8 +18,8 @@ class Car:
         self.y = FLOOR
         self.z = 0
         self.rotation = 90
-        self.speed = 2
-        self.turn_speed = 0.75
+        self.speed = 6
+        self.turn_speed = 3
     
         self.vy = 1
         self.on_ground = True
@@ -35,7 +35,7 @@ class Car:
         self.model.render()
         glPopMatrix()
 
-    def update(self, keys):
+    def update(self, keys, joystick):
         dx, dz = 0, 0
 
         if keys[pygame.K_w]:
@@ -48,6 +48,23 @@ class Car:
             self.rotation += self.turn_speed
         if keys[pygame.K_d]:
             self.rotation -= self.turn_speed
+            
+        if joystick:
+            stick = joystick.get_axis(0)
+            rtrigger = joystick.get_axis(5)
+            ltrigger = joystick.get_axis(4)
+            deadzone = 0.2
+            
+            if rtrigger > deadzone:
+                dx += self.speed * math.sin(math.radians(self.rotation))
+                dz += self.speed * math.cos(math.radians(self.rotation))
+            if ltrigger > deadzone:
+                dx -= self.speed * math.sin(math.radians(self.rotation))
+                dz -= self.speed * math.cos(math.radians(self.rotation))
+            if stick < -deadzone:
+                self.rotation += self.turn_speed
+            if stick > deadzone:
+                self.rotation -= self.turn_speed
 
         rad = math.radians(self.rotation)
         self.direction[0] = math.sin(rad)
@@ -72,7 +89,6 @@ class Car:
         if keys[pygame.K_SPACE] and self.on_ground:
             self.vy = 5
             self.on_ground = False
-
         self.vy += GRAVITY
         self.y += self.vy
 

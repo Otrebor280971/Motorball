@@ -15,8 +15,8 @@ class Car:
         self.y = FLOOR
         self.z = 0
         self.rotation = -90
-        self.speed = 2
-        self.turn_speed = 0.75
+        self.speed = 6
+        self.turn_speed = 3
         self.stadium = stadium
         self.is_left_goal = is_left_goal
 

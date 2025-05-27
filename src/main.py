@@ -7,12 +7,21 @@ import math
 from config import *
 from pcar import Car as PCar
 from ball import Ball
-from mcar import Car as MCar # le puse mcar en lugar de ccar pq quiero beto muajajaja
+from mcar import Car as MCar
 from stadium import Stadium
 
 pygame.init()
+pygame.joystick.init()
+joystick = None
 screen = pygame.display.set_mode((screen_width, screen_height), DOUBLEBUF | OPENGL)
 pygame.display.set_caption("Motorball")
+
+def detect_joystick():
+    global joystick
+    if joystick is None and pygame.joystick.get_count() > 0:
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
+        print(f"Joystick conectado: {joystick.get_name()}")
 
 stadium = Stadium()
 p_car = PCar("assets/models/car.obj", stadium)
@@ -56,7 +65,6 @@ def check_goal():
     elif ball.x >= stadium.scale*3.65 and abs(ball.z) <= goal_half_width:
         player_score += 1
         reset_positions()
-
 
 def draw_score_overlay():
     glMatrixMode(GL_PROJECTION)
@@ -204,7 +212,7 @@ def display():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     stadium.draw()
     p_car.draw()
-    p_car.update(keys)
+    p_car.update(keys, joystick)
     ball.draw()
     ball.update(stadium)
     m_car.draw()
@@ -221,6 +229,7 @@ def display():
 Init()
 done = False
 while not done:
+    detect_joystick()
     keys = pygame.key.get_pressed()
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
@@ -231,6 +240,17 @@ while not done:
                     camera_mode = "ball"
                 else:
                     camera_mode = "player"
+        
+        elif event.type == JOYBUTTONDOWN:
+            if joystick and event.button == 3:
+                if camera_mode == "player":
+                    camera_mode = "ball"
+                else:
+                    camera_mode = "player"
+            if joystick and event.button == 0:
+                p_car.vy = 5
+                p_car.on_ground = False
+            
             
     display()
     pygame.display.flip()

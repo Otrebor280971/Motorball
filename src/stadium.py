@@ -4,9 +4,9 @@ from OpenGL.GLU import *
 
 class Stadium:
     def __init__(self):
-        self.field = OBJ("./assets/models/field.obj", swapyz=True)
-        self.walls = OBJ("./assets/models/walls.obj", swapyz=True)
-        self.net = OBJ("./assets/models/net.obj", swapyz=True)
+        self.field = OBJ("assets/models/field.obj", swapyz=True)
+        self.walls = OBJ("assets/models/walls.obj", swapyz=True)
+        self.net = OBJ("assets/models/net.obj", swapyz=True)
 
         self.field.generate()
         self.walls.generate()

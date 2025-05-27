@@ -12,7 +12,7 @@ class Ball:
         
         self.x = 0
         self.y = FLOOR + self.radius
-        self.z = 0
+        self.z = 5
         
         self.vx = 0.0
         self.vy = 5.0
