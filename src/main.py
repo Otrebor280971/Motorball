@@ -107,7 +107,7 @@ def check_end():
         result = "You win"
     elif machine_score >= 3:
         result = "You lose :("
-    elif elapsed_time >= 5 * 60:
+    elif elapsed_time >= 0.5 * 60:
         if player_score > machine_score:
             result = "You win"
         elif player_score < machine_score:
